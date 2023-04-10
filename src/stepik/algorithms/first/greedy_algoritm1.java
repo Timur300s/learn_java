@@ -1,45 +1,42 @@
 package stepik.algorithms.first;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Scanner;
 import java.util.Collections;
 public class greedy_algoritm1 {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("введите кол");
-        int n = scanner.nextInt();
-        System.out.println("введите вместимость рюкзака");
-        double W= scanner.nextInt();
-        double d = 0;
-        double[] w=new double [n];
-        double[] c=new double[n];
-        Double[] p= new Double[n];
-        for (int i=0; i<n;i++){
-            System.out.println("введите стоимость");
-            double a = scanner.nextFloat();
-            c[i]=a;
-            System.out.println("введите массу");
-            double b = scanner.nextFloat();
-            w[i]=b;
-            p[i]=c[i]/w[i];
+        int elementsCount = scanner.nextInt();
+        double knapsackWeight= scanner.nextInt();
+        double resultMaxCostInKnapsack = 0;
+        double[] weights=new double [elementsCount];
+        double[] costs=new double[elementsCount];
+        Integer[] indexes= new Integer[elementsCount];
+        for (int i=0; i<elementsCount;i++){
+            costs[i]= scanner.nextFloat();
+            weights[i] = scanner.nextFloat();
+            indexes[i]=i;
         }
-        Arrays.sort(p, Collections.reverseOrder());
-        for (int i=0; i<n;i++){
-            // здесь нужно чтобы при сортировке массива p[] паралельно сортировались  массивы c[] и w[]
-            // и потом сравнить w[i] с  W
-            if (w[i]/* имееться ввиду масса самого дорого предмета за 1кг */<=W){
-                W=W-w[i];
-                d=d+c[i];
+        Arrays.sort(indexes,new Comparator<Integer>() {
+            @Override
+            public int compare(Integer index1, Integer index2) {
+                return Double.compare(costs[index1] / weights[index1], costs[index2] / weights[index2]);
             }
-            else {
-                d=p[i]*W;
+        }.reversed());
+        for (int i=0; i<elementsCount;i++){
+            Integer sortedIndex = indexes[i];
+            if (weights[sortedIndex]<=knapsackWeight){
+                knapsackWeight=knapsackWeight-weights[sortedIndex];
+                resultMaxCostInKnapsack=resultMaxCostInKnapsack+costs[sortedIndex];
             }
-            if (W==0)
+            else { double partialCost = (knapsackWeight / weights[sortedIndex]) * costs[sortedIndex];
+                resultMaxCostInKnapsack = resultMaxCostInKnapsack + partialCost;
+                knapsackWeight = 0;
+            }
+            if (knapsackWeight==0)
                 break;
         }
-        System.out.println(d);
-        for (double values : p) {
-            System.out.print(values + ", ");
-        }
+        System.out.println(resultMaxCostInKnapsack);
     }
 }
